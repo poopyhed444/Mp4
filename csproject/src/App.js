@@ -1,30 +1,8 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import AddProductForm from './AddProductForm';
-import './ProductList.css';
-
-
-// Product Component
-const Product = ({ product, handleRemove }) => (
-  <div className="product">
-    <img src={product.image} alt={product.name} />
-    <h2>{product.name}</h2>
-    <p>{product.description}</p>
-    <p>{product.price}</p>
-    <button onClick={() => handleRemove(product.id)}>Remove</button>
-  </div>
-);
-
-// ProductList Component
-const ProductList = ({ products, handleRemove }) => (
-  <div className="product-list">
-    {products.map(product => (
-      <Product key={product.id} product={product} handleRemove={handleRemove} />
-    ))}
-  </div>
-);
-
-
-// App Component
+import ProductList from './ProductList';
+import Product from './ProductList';
 const App = () => {
   const [products, setProducts] = useState([]);
 
@@ -37,12 +15,24 @@ const App = () => {
   };
 
   return (
-    <div className="app">
-      <h1>Best Sellers</h1>
-      {/* AddProductForm is a component you would create to handle product uploads */}
-      <AddProductForm handleAddProduct={handleAddProduct} />
+    <Router>
+  <div className="App"> {/* Change this line */}
+    <h1>Best Sellers</h1>
+    <nav>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/add-product">Add Product</Link></li>
+      </ul>
+    </nav>
+    <Route path="/" exact render={() => (
       <ProductList products={products} handleRemove={handleRemoveProduct} />
-    </div>
+    )} />
+    <Route path="/add-product" render={() => (
+      <AddProductForm handleAddProduct={handleAddProduct} />
+    )} />
+  </div>
+</Router>
+
   );
 };
 
