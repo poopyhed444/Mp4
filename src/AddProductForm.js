@@ -17,10 +17,8 @@ const AddProductForm = ({ handleAddProduct }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Generate a random id for the new product
     const id = Math.floor(Math.random() * 10000);
     handleAddProduct({ ...product, id });
-    // Reset the form fields
     setProduct({ name: '', description: '', price: '', image: '' });
   };
 
