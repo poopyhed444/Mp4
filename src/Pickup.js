@@ -1,8 +1,27 @@
 import React, { useState } from 'react';
-
+import { supabase } from './supabase';
 const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
     const [address, setAddress] = useState('');
     const [time, setTime] = useState('');
+
+    const handleConfirm = async () => {
+        const { data, error } = await supabase
+            .from('pickups')
+            .insert([
+                {
+                    product_id: product.id,
+                    address,
+                    time,
+                    user_id: product.user_id
+                }
+            ]);
+        if (error) {
+            console.error('Error inserting pickup data: ', error);
+        } else {
+            console.log('Pickup data inserted successfully: ', data);
+            onConfirm(product.id, address, time);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -22,7 +41,7 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
                     onChange={(e) => setTime(e.target.value)}
                 />
                 <button onClick={onClose}>Cancel</button>
-                <button onClick={() => onConfirm(product.id, address, time)}>Confirm</button>
+                <button onClick={handleConfirm}>Confirm</button>
             </div>
         </div>
     );

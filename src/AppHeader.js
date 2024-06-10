@@ -1,6 +1,7 @@
 import React from 'react';
-import { Title, Group, Anchor, Flex, Divider } from '@mantine/core';
+import { Title, Group, Anchor, Flex, Divider, ActionIcon } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import { Bell } from 'tabler-icons-react';
 import logo from './holmerr.jpg';
 
 const AppHeader = () => {
@@ -14,6 +15,11 @@ const AppHeader = () => {
                 <Group spacing="xl">
                     <Anchor component={Link} to="/" underline={false}>Home</Anchor>
                     <Anchor component={Link} to="/add-product" underline={false}>Add Product</Anchor>
+                    <Anchor component={Link} to="/notifications" underline={false}>
+                        <ActionIcon component={Link} to="/notifications">
+                            <Bell size={20} />
+                        </ActionIcon>
+                    </Anchor>
                 </Group>
             </Flex>
             <Divider />
@@ -22,5 +28,3 @@ const AppHeader = () => {
 };
 
 export default AppHeader;
-
-
