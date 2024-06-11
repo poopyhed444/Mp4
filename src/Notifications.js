@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import { Paper, Title, Timeline, Text } from '@mantine/core';
 
-const Notifications = ({userIds}) => {
+const Notifications = ({ userIds }) => {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
@@ -17,7 +18,14 @@ const Notifications = ({userIds}) => {
                     if (error) {
                         console.error(`Error fetching notifications for user ${userId}:`, error);
                     } else {
-                        allNotifications.push(...data);
+                        const recentNotifications = data.filter(notification => {
+                            // Assuming notification.time is a timestamp in ISO format
+                            const notificationTime = new Date(notification.time);
+                            const currentTime = new Date();
+                            const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+                            return currentTime - notificationTime < fiveMinutes;
+                        });
+                        allNotifications.push(...recentNotifications);
                     }
                 }
                 setNotifications(allNotifications);
@@ -30,16 +38,24 @@ const Notifications = ({userIds}) => {
     }, [userIds]);
 
     return (
-        <div>
-            <h2>Notifications</h2>
-            <ul>
-                {notifications.map(notification => (
-                    <li key={notification.id}>
-                        Product ID: {notification.product_id}, Address: {notification.address}, Time: {notification.time}
-                    </li>
+        <Paper padding="md" shadow="xs" radius="md" style={{ marginTop: 20 }}>
+            <Title order={2} style={{ marginBottom: 20 }}>Notifications</Title>
+            <Timeline active={0} bulletSize={24} lineWidth={2}>
+                {notifications.map((notification, index) => (
+                    <Timeline.Item key={notification.id} title={`Notification #${index + 1}`}>
+                        <Text size="sm">
+                            <strong>Product Name:</strong> {notification.product_name}
+                        </Text>
+                        <Text size="sm">
+                            <strong>Address:</strong> {notification.address}
+                        </Text>
+                        <Text size="sm">
+                            <strong>Time:</strong> {notification.time}
+                        </Text>
+                    </Timeline.Item>
                 ))}
-            </ul>
-        </div>
+            </Timeline>
+        </Paper>
     );
 };
 

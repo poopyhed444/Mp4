@@ -7,6 +7,7 @@ import { supabase } from './supabase';
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [userId, setUserId] = useState(null); // State to store the logged-in user's ID
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -19,6 +20,12 @@ const ProductList = () => {
         };
 
         fetchProducts();
+
+        supabase.auth.getUser()
+            .then(({ data, error }) => {
+                if (data && data.user) setUserId(data.user.id);
+                if (error) console.error('Error fetching user data:', error);
+            });
     }, []);
 
     const handleProductClick = (product) => {
@@ -52,7 +59,9 @@ const ProductList = () => {
         <div className="product-list">
             {products.length > 0 ? (
                 products.map(product => (
-                    <Product key={product.id} product={product} handleRemove={() => handleRemove(product.id)} handleClick={handleProductClick} />
+                    <Product key={product.id} product={product}
+                             handleRemove={product.user_id === userId ? () => handleRemove(product.id) : undefined}
+                             handleClick={handleProductClick} />
                 ))
             ) : (
                 <p>No products available.</p>

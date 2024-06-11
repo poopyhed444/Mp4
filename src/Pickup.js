@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from './supabase';
+
 const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
     const [address, setAddress] = useState('');
-    const [time, setTime] = useState('');
+    const [datetime, setDatetime] = useState('');  // Renamed to datetime to reflect both date and time
 
     const handleConfirm = async () => {
         const { data, error } = await supabase
@@ -10,8 +11,9 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
             .insert([
                 {
                     product_id: product.id,
+                    product_name: product.name,  // Assuming the product object has a 'name' property
                     address,
-                    time,
+                    time: datetime,  // Using datetime here
                     user_id: product.user_id
                 }
             ]);
@@ -19,7 +21,7 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
             console.error('Error inserting pickup data: ', error);
         } else {
             console.log('Pickup data inserted successfully: ', data);
-            onConfirm(product.id, address, time);
+            onConfirm(product.id, address, datetime);  // Pass datetime instead of just time
         }
     };
 
@@ -36,9 +38,9 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
                     onChange={(e) => setAddress(e.target.value)}
                 />
                 <input
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
+                    type="datetime-local"
+                    value={datetime}
+                    onChange={(e) => setDatetime(e.target.value)}
                 />
                 <button onClick={onClose}>Cancel</button>
                 <button onClick={handleConfirm}>Confirm</button>
@@ -46,4 +48,5 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
         </div>
     );
 };
+
 export default PickupModal;
