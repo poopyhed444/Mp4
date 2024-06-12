@@ -36,7 +36,7 @@ const AuctionHouse = ({ userId }) => {
     useEffect(() => {
         const interval = setInterval(() => {
             updateAuctionTimes(auctions);
-        }, 1000); // Update every second
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [auctions]);

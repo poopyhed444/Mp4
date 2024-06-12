@@ -25,7 +25,6 @@ const App = () => {
         getInitialValueInEffect: true
     });
 
-    // Toggle between light and dark theme
     const toggleTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     };
