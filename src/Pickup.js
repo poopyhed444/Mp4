@@ -6,24 +6,37 @@ const PickupModal = ({ isOpen, product, onClose, onConfirm }) => {
     const [datetime, setDatetime] = useState('');  // Renamed to datetime to reflect both date and time
 
     const handleConfirm = async () => {
-        const { data, error } = await supabase
+        const { data: pickupData, error: pickupError } = await supabase
             .from('pickups')
             .insert([
                 {
                     product_id: product.id,
-                    product_name: product.name,  // Assuming the product object has a 'name' property
+                    product_name: product.name,
                     address,
-                    time: datetime,  // Using datetime here
+                    time: datetime,
                     user_id: product.user_id
                 }
             ]);
-        if (error) {
-            console.error('Error inserting pickup data: ', error);
+
+        if (pickupError) {
+            console.error('Error inserting pickup data: ', pickupError);
+            return;
+        }
+        console.log('Pickup data inserted successfully: ', pickupData);
+
+        const { data: deleteData, error: deleteError } = await supabase
+            .from('products')
+            .delete()
+            .match({ id: product.id });
+
+        if (deleteError) {
+            console.error('Error deleting product: ', deleteError);
         } else {
-            console.log('Pickup data inserted successfully: ', data);
-            onConfirm(product.id, address, datetime);  // Pass datetime instead of just time
+            console.log('Product deleted successfully: ', deleteData);
+            onConfirm(product.id, address, datetime);
         }
     };
+
 
     if (!isOpen) return null;
 
