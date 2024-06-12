@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabase';
-import { Card, Text, Button, Group, Image, Modal, NumberInput } from '@mantine/core';
+import { Card, Text, Button, Group, Image, Modal, NumberInput, Title, Container } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import styles from './AuctionHouse.module.css';
 
@@ -113,6 +113,9 @@ const AuctionHouse = ({ userId }) => {
 
     return (
         <div className={styles.productList}>
+            <Container>
+                <Title order={1} style={{ textAlign: 'center', margin: '20px 0' }}>The Auction House</Title>
+            </Container>
             {auctions.map((auction) => (
                 <Card key={auction.id} className={styles.productCard} shadow="sm" p="lg" radius="md" withBorder>
                     <Image
