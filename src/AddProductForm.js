@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Button, TextInput, Group } from '@mantine/core';
+import { Drawer, Button, TextInput, Group, Switch, NumberInput } from '@mantine/core';
 import { supabase } from './supabase';
-import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
+import { useNavigate } from 'react-router-dom';
 
 const AddProductForm = () => {
-    const [product, setProduct] = useState({ name: '', description: '', price: null, image: '' });
+    const [product, setProduct] = useState({ name: '', description: '', price: null, image: '', isauction: false, timeend: '' });
     const [userId, setUserId] = useState(null);
     const [opened, setOpened] = useState(false);
-    const navigate = useNavigate(); // Initialize the navigation hook
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getUser = async () => {
             const { data, error } = await supabase.auth.getUser();
             if (data && data.user) {
-                console.log('User is logged in:', data.user.id);
                 setUserId(data.user.id);
                 setOpened(true);
             } else {
@@ -35,37 +34,53 @@ const AddProductForm = () => {
         } else {
             setProduct(prev => ({
                 ...prev,
-                [name]: name === 'price' ? parseFloat(value) || null : value
+                [name]: value
             }));
         }
     };
 
+    const handleSwitchChange = (event) => {
+        const isChecked = event.currentTarget.checked;
+        setProduct(prev => ({
+            ...prev,
+            isauction: isChecked,
+            timeend: isChecked ? prev.timeend : ''  // Clear the timeend if not auction
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Ensure timeend is not set if not an auction
+        const submissionData = {
+            ...product,
+            user_id: userId,
+            timeend: product.isauction ? product.timeend : null
+        };
+
         const { data, error } = await supabase
             .from('products')
-            .insert([{ ...product, user_id: userId }]);
+            .insert([submissionData]);
 
         if (error) {
             console.error('Error inserting data: ', error);
         } else {
-            console.log('Data inserted successfully: ', data);
-            setProduct({ name: '', description: '', price: null, image: '' }); // Reset form
-            setOpened(false); // Close the drawer
-            navigate('/'); // Navigate to the root page
+            setProduct({ name: '', description: '', price: null, image: '', isauction: false, timeend: '' });
+            setOpened(false);
+            navigate('/');
         }
     };
 
     const handleClose = () => {
-        setOpened(false); // Close the drawer
-        navigate('/'); // Navigate to the root page
+        setOpened(false);
+        navigate('/');
     };
 
     return (
         <>
             <Drawer
                 opened={opened}
-                onClose={handleClose} // Call handleClose when the drawer is closed
+                onClose={handleClose}
                 title="Add Product"
                 padding="xl"
                 size="xl"
@@ -86,20 +101,31 @@ const AddProductForm = () => {
                         onChange={handleChange}
                         required
                     />
-                    <label htmlFor="price">
-                        Price:
+                    <NumberInput
+                        label={product.isauction ? "Starting Bid" : "Price"}
+                        name="price"
+                        value={product.price || ''}
+                        onChange={value => setProduct(prev => ({ ...prev, price: value }))}
+                        required
+                    />
+                    <Switch
+                        label="List as auction"
+                        checked={product.isauction}
+                        onChange={handleSwitchChange}
+                    />
+                    {product.isauction && (
                         <input
-                            type="number"
-                            id="price"
-                            name="price"
-                            value={product.price || ''}
+                            type="datetime-local"
+                            name="timeend"
+                            value={product.timeend}
                             onChange={handleChange}
-                            required
-                            style={{ width: '100%', marginTop: 10 }}
+                            required={product.isauction}
+                            style={{ width: '100%', marginTop: 10, padding: '8px' }}
                         />
-                    </label>
+                    )}
+
                     <Group position="left" grow>
-                        <label htmlFor="image-upload" style={{ width: '100%' }}>
+                        <label htmlFor="image-upload">
                             Image:
                             <input
                                 type="file"

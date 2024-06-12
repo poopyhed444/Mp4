@@ -8,6 +8,7 @@ import { supabase } from './supabase';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import Notifications from './Notifications';
+import AuctionHouse from "./AuctionHouse";
 
 const App = () => {
     const [products, setProducts] = useState([]);
@@ -52,6 +53,7 @@ const App = () => {
                     <AppHeader />
                     <Routes>
                         <Route path="/" element={session ? <ProductList products={products} handleRemove={handleRemoveProduct} /> : <Navigate to="/login" />} />
+                        <Route path="/auctions" element={session ? <AuctionHouse userId={userId} /> : <Navigate to="/login" />} />
                         <Route path="/add-product" element={session ? <AddProductForm handleAddProduct={handleAddProduct} /> : <Navigate to="/login" />} />
                         <Route path="/notifications" element={session && userId ? <Notifications userIds={[userId]} /> : <Navigate to="/login" />} />
                         <Route path="/login" element={!session ? (

@@ -13,7 +13,8 @@ const ProductList = () => {
         const fetchProducts = async () => {
             let { data, error } = await supabase
                 .from('products')
-                .select('*');
+                .select('*')
+                .eq('isauction', false);
 
             if (error) console.error('Error fetching products:', error);
             else setProducts(data);
