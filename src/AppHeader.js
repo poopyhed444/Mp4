@@ -10,7 +10,7 @@ const AppHeader = ({ toggleTheme }) => {
             <Flex justify="space-between" align="center" style={{ padding: '0 20px' }}>
                 <Group spacing="xs" align="center">
                     <img src={logo} alt="HolmerMarkets Logo" style={{ height: '40px' }} />
-                    <Title order={1}>Holmer's List</Title>
+                    <Title order={1}>HolmerCart</Title>
                 </Group>
                 <Group spacing="xl">
                     <Anchor component={Link} to="/" underline={false}>Home</Anchor>
